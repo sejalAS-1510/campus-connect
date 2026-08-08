@@ -1,0 +1,48 @@
+"use client";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import ThemeToggle from "./ThemeToggle";
+import type { CurrentUser } from "@/lib/useCurrentUser";
+
+export default function Navbar({ user }: { user: CurrentUser | null }) {
+  const router = useRouter();
+
+  async function handleLogout() {
+    await fetch("/api/auth/logout", { method: "POST" });
+    toast.success("Signed out.");
+    router.push("/login");
+    router.refresh();
+  }
+
+  return (
+    <header className="border-b border-ink/10 dark:border-parchment/10">
+      <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+        <Link href="/dashboard" className="font-display text-lg tracking-tight">
+          Campus<span className="text-brass">Connect</span>
+        </Link>
+        <nav className="flex items-center gap-5 text-sm">
+          <Link href="/dashboard" className="hover:text-brass transition-colors">
+            Dashboard
+          </Link>
+          <Link href="/dashboard/attendance" className="hover:text-brass transition-colors">
+            Attendance
+          </Link>
+          <Link href="/dashboard/assignments" className="hover:text-brass transition-colors">
+            Assignments
+          </Link>
+          <ThemeToggle />
+          {user && (
+            <button
+              onClick={handleLogout}
+              className="rounded-full border border-ink/15 dark:border-parchment/20 px-3 py-1.5 hover:bg-ink/5 dark:hover:bg-parchment/10 transition-colors"
+            >
+              Sign out
+            </button>
+          )}
+        </nav>
+      </div>
+    </header>
+  );
+}
