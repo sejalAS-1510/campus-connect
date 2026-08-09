@@ -32,8 +32,7 @@ export default function SignupPage() {
         return;
       }
       toast.success("Welcome to CampusConnect!");
-      router.push("/dashboard");
-      router.refresh();
+      window.location.href = "/dashboard";
     } catch {
       toast.error("Something went wrong. Try again.");
     } finally {

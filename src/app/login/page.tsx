@@ -25,8 +25,7 @@ export default function LoginPage() {
         return;
       }
       toast.success(`Welcome back, ${data.user.name.split(" ")[0]}.`);
-      router.push("/dashboard");
-      router.refresh();
+      window.location.href = "/dashboard";
     } catch {
       toast.error("Something went wrong. Try again.");
     } finally {

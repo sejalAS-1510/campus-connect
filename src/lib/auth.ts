@@ -22,10 +22,16 @@ export async function verifyPassword(password: string, hash: string) {
 }
 
 export function signToken(payload: TokenPayload) {
+  if (!JWT_SECRET) {
+    throw new Error(
+      "JWT_SECRET environment variable is missing. Please add JWT_SECRET to your .env.local file."
+    );
+  }
   return jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
 }
 
 export function verifyToken(token: string): TokenPayload | null {
+  if (!JWT_SECRET) return null;
   try {
     return jwt.verify(token, JWT_SECRET) as TokenPayload;
   } catch {

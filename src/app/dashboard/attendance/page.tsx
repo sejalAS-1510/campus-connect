@@ -153,10 +153,10 @@ export default function AttendancePage() {
                         <div className="mt-4 border-t border-ink/10 dark:border-parchment/10 pt-4">
                           <ul className="space-y-2 max-h-64 overflow-y-auto">
                             {s.records.map((r) => (
-                              <li key={r.student._id} className="flex items-center justify-between text-sm">
+                              <li key={r.student?._id || Math.random().toString()} className="flex items-center justify-between text-sm">
                                 <span>
-                                  {r.student.name}
-                                  {r.student.rollNumber && (
+                                  {r.student?.name || "Student"}
+                                  {r.student?.rollNumber && (
                                     <span className="text-ink/40 dark:text-parchment/40">
                                       {" "}
                                       · {r.student.rollNumber}
@@ -166,9 +166,9 @@ export default function AttendancePage() {
                                 <label className="flex items-center gap-2 cursor-pointer">
                                   <input
                                     type="checkbox"
-                                    checked={!!draftPresence[r.student._id]}
+                                    checked={!!(r.student?._id && draftPresence[r.student._id])}
                                     onChange={(e) =>
-                                      setDraftPresence({
+                                      r.student?._id && setDraftPresence({
                                         ...draftPresence,
                                         [r.student._id]: e.target.checked,
                                       })

@@ -13,6 +13,23 @@ interface Assignment {
   deadline: string;
   submissionCount?: number;
   submitted?: boolean;
+  createdBy?: {
+    _id: string;
+    name: string;
+    department?: string;
+  };
+}
+
+interface StudentSubmission {
+  _id: string;
+  content: string;
+  submittedAt: string;
+  student?: {
+    _id: string;
+    name: string;
+    email: string;
+    rollNumber?: string;
+  };
 }
 
 export default function AssignmentsPage() {
@@ -23,6 +40,11 @@ export default function AssignmentsPage() {
   const [creating, setCreating] = useState(false);
   const [openSubmit, setOpenSubmit] = useState<string | null>(null);
   const [submitText, setSubmitText] = useState("");
+
+  // Submissions drawer for faculty
+  const [openSubmissionsId, setOpenSubmissionsId] = useState<string | null>(null);
+  const [submissionsList, setSubmissionsList] = useState<StudentSubmission[]>([]);
+  const [loadingSubmissions, setLoadingSubmissions] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -73,6 +95,30 @@ export default function AssignmentsPage() {
     setOpenSubmit(null);
     setSubmitText("");
     load();
+  }
+
+  async function fetchSubmissions(assignmentId: string) {
+    if (openSubmissionsId === assignmentId) {
+      setOpenSubmissionsId(null);
+      return;
+    }
+    setOpenSubmissionsId(assignmentId);
+    setLoadingSubmissions(true);
+    try {
+      const res = await fetch(`/api/assignments/submissions?assignmentId=${assignmentId}`);
+      const data = await res.json();
+      if (data.submissions) {
+        setSubmissionsList(data.submissions);
+      }
+    } catch {
+      toast.error("Failed to load submissions.");
+    } finally {
+      setLoadingSubmissions(false);
+    }
+  }
+
+  function isUrl(text: string) {
+    return text.startsWith("http://") || text.startsWith("https://");
   }
 
   return (
@@ -150,13 +196,17 @@ export default function AssignmentsPage() {
                     <p className="font-medium">{a.title}</p>
                     <p className="text-xs text-ink/50 dark:text-parchment/50 mb-2">
                       {a.subject} · Due {new Date(a.deadline).toLocaleDateString()}
+                      {a.createdBy?.name && ` · Posted by ${a.createdBy.name}`}
                     </p>
                     <p className="text-sm text-ink/70 dark:text-parchment/70">{a.description}</p>
                   </div>
                   {user?.role === "faculty" ? (
-                    <span className="text-xs rounded-full bg-ink/5 dark:bg-parchment/10 px-3 py-1 whitespace-nowrap">
-                      {a.submissionCount ?? 0} submitted
-                    </span>
+                    <button
+                      onClick={() => fetchSubmissions(a._id)}
+                      className="text-xs rounded-full bg-brass/15 text-brass hover:bg-brass/25 px-3 py-1.5 font-medium whitespace-nowrap transition-colors"
+                    >
+                      {openSubmissionsId === a._id ? "Close Submissions" : `${a.submissionCount ?? 0} Submissions`}
+                    </button>
                   ) : a.submitted ? (
                     <span className="text-xs rounded-full bg-moss/10 text-moss px-3 py-1 whitespace-nowrap">
                       Submitted
@@ -171,6 +221,52 @@ export default function AssignmentsPage() {
                   )}
                 </div>
 
+                {/* Faculty Submissions Drawer */}
+                {openSubmissionsId === a._id && (
+                  <div className="mt-4 border-t border-ink/10 dark:border-parchment/10 pt-4">
+                    <h3 className="text-sm font-medium mb-3">Student Submissions</h3>
+                    {loadingSubmissions ? (
+                      <p className="text-xs text-ink/50 dark:text-parchment/50 animate-pulse">Loading submissions…</p>
+                    ) : submissionsList.length === 0 ? (
+                      <p className="text-xs text-ink/50 dark:text-parchment/50 italic">No submissions for this assignment yet.</p>
+                    ) : (
+                      <ul className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+                        {submissionsList.map((sub) => (
+                          <li
+                            key={sub._id}
+                            className="rounded-md border border-ink/10 dark:border-parchment/10 p-3 bg-ink/5 dark:bg-parchment/5 text-xs space-y-1"
+                          >
+                            <div className="flex items-center justify-between font-medium">
+                              <span>
+                                {sub.student?.name || "Student"}
+                                {sub.student?.rollNumber && ` (${sub.student.rollNumber})`}
+                              </span>
+                              <span className="text-[10px] text-ink/40 dark:text-parchment/40">
+                                {new Date(sub.submittedAt).toLocaleString()}
+                              </span>
+                            </div>
+                            <div className="text-ink/80 dark:text-parchment/80 break-all">
+                              {isUrl(sub.content) ? (
+                                <a
+                                  href={sub.content}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-brass underline hover:opacity-80"
+                                >
+                                  {sub.content} ↗
+                                </a>
+                              ) : (
+                                <span>{sub.content}</span>
+                              )}
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+
+                {/* Student Submission Form */}
                 {openSubmit === a._id && (
                   <div className="mt-4 border-t border-ink/10 dark:border-parchment/10 pt-4 space-y-2">
                     <textarea

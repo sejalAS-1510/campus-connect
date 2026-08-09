@@ -24,7 +24,9 @@ export async function GET(req: NextRequest) {
   }
 
   // student: all assignments + whether they've submitted
-  const assignments = await Assignment.find({}).sort({ deadline: 1 });
+  const assignments = await Assignment.find({})
+    .populate("createdBy", "name department")
+    .sort({ deadline: 1 });
   const mySubmissions = await Submission.find({ student: payload.userId });
   const submittedIds = new Set(mySubmissions.map((s) => s.assignment.toString()));
 
