@@ -1,14 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import ThemeToggle from "./ThemeToggle";
 import type { CurrentUser } from "@/lib/useCurrentUser";
 
 export default function Navbar({ user }: { user: CurrentUser | null }) {
-  const router = useRouter();
-
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" });
     toast.success("Signed out.");
@@ -17,7 +14,7 @@ export default function Navbar({ user }: { user: CurrentUser | null }) {
 
   return (
     <header className="border-b border-ink/10 dark:border-parchment/10 sticky top-0 bg-parchment/80 dark:bg-ink/80 backdrop-blur-md z-40">
-      <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link href="/dashboard" className="font-display text-lg tracking-tight flex items-center gap-2">
           Campus<span className="text-brass">Connect</span>
           {user?.role && (
@@ -26,9 +23,12 @@ export default function Navbar({ user }: { user: CurrentUser | null }) {
             </span>
           )}
         </Link>
-        <nav className="flex items-center gap-4 text-xs sm:text-sm">
+        <nav className="flex items-center gap-3 text-xs sm:text-sm">
           <Link href="/dashboard" className="hover:text-brass transition-colors">
             Dashboard
+          </Link>
+          <Link href="/dashboard/notices" className="hover:text-brass transition-colors">
+            Notices
           </Link>
           <Link href="/dashboard/attendance" className="hover:text-brass transition-colors">
             Attendance
@@ -41,6 +41,17 @@ export default function Navbar({ user }: { user: CurrentUser | null }) {
           </Link>
           <Link href="/dashboard/placements" className="hover:text-brass transition-colors">
             Placements
+          </Link>
+          {user?.role === "admin" && (
+            <Link href="/dashboard/admin" className="hover:text-brass font-medium text-brass transition-colors">
+              Admin Panel
+            </Link>
+          )}
+          <Link href="/dashboard/profile" className="hover:text-brass transition-colors">
+            Profile
+          </Link>
+          <Link href="/dashboard/settings" className="hover:text-brass transition-colors">
+            Settings
           </Link>
           <ThemeToggle />
           {user && (

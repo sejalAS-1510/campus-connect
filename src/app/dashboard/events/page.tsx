@@ -80,7 +80,7 @@ export default function EventsPage() {
     load();
   }
 
-  const canManage = ["faculty", "coordinator", "admin"].includes(user?.role || "");
+  const canManage = ["coordinator", "admin"].includes(user?.role || "");
 
   return (
     <main>

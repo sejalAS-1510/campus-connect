@@ -21,6 +21,12 @@ export async function GET(req: NextRequest) {
       role: user.role,
       department: user.department,
       rollNumber: user.rollNumber,
+      phone: user.phone,
+      semester: user.semester,
+      bio: user.bio,
+      linkedIn: user.linkedIn,
+      gitHub: user.gitHub,
+      resumeUrl: user.resumeUrl,
     },
   });
 }

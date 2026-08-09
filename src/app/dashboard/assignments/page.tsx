@@ -127,7 +127,7 @@ export default function AssignmentsPage() {
       <div className="max-w-3xl mx-auto px-6 py-12">
         <h1 className="font-display text-3xl mb-8">Assignments</h1>
 
-        {user?.role === "faculty" && (
+        {["faculty", "admin"].includes(user?.role || "") && (
           <form
             onSubmit={createAssignment}
             className="rounded-lg border border-ink/15 dark:border-parchment/15 p-5 mb-8 space-y-3"
@@ -200,7 +200,7 @@ export default function AssignmentsPage() {
                     </p>
                     <p className="text-sm text-ink/70 dark:text-parchment/70">{a.description}</p>
                   </div>
-                  {user?.role === "faculty" ? (
+                  {["faculty", "admin"].includes(user?.role || "") ? (
                     <button
                       onClick={() => fetchSubmissions(a._id)}
                       className="text-xs rounded-full bg-brass/15 text-brass hover:bg-brass/25 px-3 py-1.5 font-medium whitespace-nowrap transition-colors"

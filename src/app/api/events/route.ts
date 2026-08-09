@@ -31,9 +31,9 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const payload = getTokenFromRequest(req);
-  if (!payload || !["faculty", "coordinator", "admin"].includes(payload.role)) {
+  if (!payload || !["coordinator", "admin"].includes(payload.role)) {
     return NextResponse.json(
-      { error: "Only faculty, coordinators, and admins can create events." },
+      { error: "Only coordinators and admins can create events." },
       { status: 403 }
     );
   }

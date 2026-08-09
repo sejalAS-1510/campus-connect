@@ -6,8 +6,11 @@ import Assignment from "@/models/Assignment";
 
 export async function GET(req: NextRequest) {
   const payload = getTokenFromRequest(req);
-  if (!payload || payload.role !== "faculty") {
-    return NextResponse.json({ error: "Only faculty can view submissions." }, { status: 403 });
+  if (!payload || !["faculty", "admin"].includes(payload.role)) {
+    return NextResponse.json(
+      { error: "Only faculty and admins can view student submissions." },
+      { status: 403 }
+    );
   }
 
   const { searchParams } = new URL(req.url);
@@ -18,7 +21,6 @@ export async function GET(req: NextRequest) {
 
   await connectDB();
 
-  // Ensure this faculty owns the assignment
   const assignment = await Assignment.findById(assignmentId);
   if (!assignment) {
     return NextResponse.json({ error: "Assignment not found." }, { status: 404 });

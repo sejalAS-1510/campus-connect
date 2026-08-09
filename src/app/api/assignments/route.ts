@@ -10,10 +10,11 @@ export async function GET(req: NextRequest) {
 
   await connectDB();
 
-  if (payload.role === "faculty") {
-    const assignments = await Assignment.find({ createdBy: payload.userId }).sort({
-      createdAt: -1,
-    });
+  if (["faculty", "admin"].includes(payload.role)) {
+    const query = payload.role === "admin" ? {} : { createdBy: payload.userId };
+    const assignments = await Assignment.find(query)
+      .populate("createdBy", "name department")
+      .sort({ createdAt: -1 });
     const withCounts = await Promise.all(
       assignments.map(async (a) => {
         const count = await Submission.countDocuments({ assignment: a._id });
@@ -23,7 +24,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ assignments: withCounts });
   }
 
-  // student: all assignments + whether they've submitted
+  // student / coordinator: view assignments + whether student submitted
   const assignments = await Assignment.find({})
     .populate("createdBy", "name department")
     .sort({ deadline: 1 });
@@ -40,8 +41,11 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const payload = getTokenFromRequest(req);
-  if (!payload || payload.role !== "faculty") {
-    return NextResponse.json({ error: "Only faculty can create assignments." }, { status: 403 });
+  if (!payload || !["faculty", "admin"].includes(payload.role)) {
+    return NextResponse.json(
+      { error: "Only faculty and admins can create assignments." },
+      { status: 403 }
+    );
   }
 
   const { title, description, subject, deadline } = await req.json();

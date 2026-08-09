@@ -4,21 +4,22 @@ import { connectDB } from "@/lib/db";
 import Attendance from "@/models/Attendance";
 import User from "@/models/User";
 
-// GET: faculty -> sessions they created. student -> sessions with their own record + %.
+// GET: faculty/admin -> sessions. student/coordinator -> sessions with their record + %.
 export async function GET(req: NextRequest) {
   const payload = getTokenFromRequest(req);
   if (!payload) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
 
   await connectDB();
 
-  if (payload.role === "faculty") {
-    const sessions = await Attendance.find({ createdBy: payload.userId })
+  if (["faculty", "admin"].includes(payload.role)) {
+    const query = payload.role === "admin" ? {} : { createdBy: payload.userId };
+    const sessions = await Attendance.find(query)
       .sort({ date: -1 })
-      .populate("records.student", "name rollNumber");
+      .populate("records.student", "name rollNumber department");
     return NextResponse.json({ sessions });
   }
 
-  // student
+  // student / coordinator view
   const sessions = await Attendance.find({ "records.student": payload.userId }).sort({
     date: -1,
   });
@@ -40,11 +41,11 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ bySubject, history });
 }
 
-// POST: faculty creates a new attendance session for all students, defaulting to absent.
+// POST: faculty/admin creates a new attendance session for all students
 export async function POST(req: NextRequest) {
   const payload = getTokenFromRequest(req);
-  if (!payload || payload.role !== "faculty") {
-    return NextResponse.json({ error: "Only faculty can create attendance sessions." }, { status: 403 });
+  if (!payload || !["faculty", "admin"].includes(payload.role)) {
+    return NextResponse.json({ error: "Only faculty and admins can create attendance sessions." }, { status: 403 });
   }
 
   const { subject, date } = await req.json();

@@ -31,9 +31,9 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const payload = getTokenFromRequest(req);
-  if (!payload || !["coordinator", "admin", "faculty"].includes(payload.role)) {
+  if (!payload || !["coordinator", "admin"].includes(payload.role)) {
     return NextResponse.json(
-      { error: "Only placement coordinators, admins, or faculty can post job drives." },
+      { error: "Only placement coordinators and admins can post job drives." },
       { status: 403 }
     );
   }

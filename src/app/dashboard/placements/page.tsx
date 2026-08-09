@@ -18,6 +18,21 @@ interface PlacementItem {
   createdBy?: { name: string };
 }
 
+interface ApplicantItem {
+  _id: string;
+  resumeUrl?: string;
+  status: string;
+  appliedAt: string;
+  student?: {
+    _id: string;
+    name: string;
+    email: string;
+    rollNumber?: string;
+    department?: string;
+    phone?: string;
+  };
+}
+
 export default function PlacementsPage() {
   const { user, loading: userLoading } = useCurrentUser();
   const [placements, setPlacements] = useState<PlacementItem[]>([]);
@@ -32,6 +47,11 @@ export default function PlacementsPage() {
   });
   const [creating, setCreating] = useState(false);
   const [resumeUrl, setResumeUrl] = useState("");
+
+  // Drawer for Viewing Applicants (Admin/Coordinator/Faculty)
+  const [openApplicantsId, setOpenApplicantsId] = useState<string | null>(null);
+  const [applicantsList, setApplicantsList] = useState<ApplicantItem[]>([]);
+  const [loadingApplicants, setLoadingApplicants] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -79,7 +99,25 @@ export default function PlacementsPage() {
     load();
   }
 
-  const canManage = ["coordinator", "admin", "faculty"].includes(user?.role || "");
+  async function fetchApplicants(placementId: string) {
+    if (openApplicantsId === placementId) {
+      setOpenApplicantsId(null);
+      return;
+    }
+    setOpenApplicantsId(placementId);
+    setLoadingApplicants(true);
+    try {
+      const res = await fetch(`/api/placements/applications?placementId=${placementId}`);
+      const data = await res.json();
+      if (data.applications) setApplicantsList(data.applications);
+    } catch {
+      toast.error("Failed to load applicants.");
+    } finally {
+      setLoadingApplicants(false);
+    }
+  }
+
+  const canManage = ["coordinator", "admin"].includes(user?.role || "");
 
   return (
     <main>
@@ -182,9 +220,18 @@ export default function PlacementsPage() {
                 <p className="text-sm text-ink/70 dark:text-parchment/70 leading-relaxed">{p.description}</p>
 
                 <div className="pt-3 border-t border-ink/10 dark:border-parchment/10 flex flex-wrap items-center justify-between gap-3">
-                  <span className="text-xs text-ink/50 dark:text-parchment/50">
-                    👥 {p.applicantCount} Student{p.applicantCount !== 1 ? "s" : ""} Applied
-                  </span>
+                  {canManage ? (
+                    <button
+                      onClick={() => fetchApplicants(p._id)}
+                      className="text-xs rounded-full bg-brass/15 text-brass hover:bg-brass/25 px-3.5 py-1.5 font-medium transition-colors"
+                    >
+                      {openApplicantsId === p._id ? "Close Applicants" : `👥 ${p.applicantCount} Applicants`}
+                    </button>
+                  ) : (
+                    <span className="text-xs text-ink/50 dark:text-parchment/50">
+                      👥 {p.applicantCount} Student{p.applicantCount !== 1 ? "s" : ""} Applied
+                    </span>
+                  )}
 
                   {p.applicationStatus ? (
                     <span className="text-xs font-semibold rounded-full bg-moss/10 text-moss px-3.5 py-1.5 capitalize">
@@ -207,6 +254,49 @@ export default function PlacementsPage() {
                     </div>
                   ) : null}
                 </div>
+
+                {/* Applicants Drawer for Coordinators / Admin / Faculty */}
+                {openApplicantsId === p._id && (
+                  <div className="mt-4 border-t border-ink/10 dark:border-parchment/10 pt-4">
+                    <h4 className="text-sm font-medium mb-3">Applied Students</h4>
+                    {loadingApplicants ? (
+                      <p className="text-xs text-ink/50 dark:text-parchment/50 animate-pulse">Loading applicants…</p>
+                    ) : applicantsList.length === 0 ? (
+                      <p className="text-xs text-ink/50 dark:text-parchment/50 italic">No applications received yet.</p>
+                    ) : (
+                      <ul className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                        {applicantsList.map((app) => (
+                          <li
+                            key={app._id}
+                            className="rounded-md border border-ink/10 dark:border-parchment/10 p-3 bg-ink/5 dark:bg-parchment/5 text-xs flex flex-wrap items-center justify-between gap-2"
+                          >
+                            <div>
+                              <p className="font-semibold">
+                                {app.student?.name || "Student"}
+                                {app.student?.rollNumber && ` (${app.student.rollNumber})`}
+                              </p>
+                              <p className="text-[11px] text-ink/50 dark:text-parchment/50">
+                                ✉️ {app.student?.email} · Applied {new Date(app.appliedAt).toLocaleDateString()}
+                              </p>
+                            </div>
+                            {app.resumeUrl ? (
+                              <a
+                                href={app.resumeUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-brass underline font-medium text-xs hover:opacity-80"
+                              >
+                                View Resume ↗
+                              </a>
+                            ) : (
+                              <span className="text-[10px] text-ink/40 dark:text-parchment/40">No resume link attached</span>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>

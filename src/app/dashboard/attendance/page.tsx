@@ -92,7 +92,7 @@ export default function AttendancePage() {
       <div className="max-w-3xl mx-auto px-6 py-12">
         <h1 className="font-display text-3xl mb-8">Attendance</h1>
 
-        {user?.role === "faculty" && (
+        {["faculty", "admin"].includes(user?.role || "") && (
           <>
             <form
               onSubmit={createSession}

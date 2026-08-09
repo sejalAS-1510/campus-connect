@@ -1,14 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { Role } from "@/lib/auth";
 
 export interface CurrentUser {
   id: string;
   name: string;
   email: string;
-  role: "student" | "faculty";
+  role: Role;
   department?: string;
   rollNumber?: string;
+  phone?: string;
+  semester?: string;
+  bio?: string;
+  linkedIn?: string;
+  gitHub?: string;
+  resumeUrl?: string;
 }
 
 export function useCurrentUser() {

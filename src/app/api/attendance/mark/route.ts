@@ -5,8 +5,8 @@ import Attendance from "@/models/Attendance";
 
 export async function POST(req: NextRequest) {
   const payload = getTokenFromRequest(req);
-  if (!payload || payload.role !== "faculty") {
-    return NextResponse.json({ error: "Only faculty can mark attendance." }, { status: 403 });
+  if (!payload || !["faculty", "admin"].includes(payload.role)) {
+    return NextResponse.json({ error: "Only faculty and admins can mark attendance." }, { status: 403 });
   }
 
   const { sessionId, records } = (await req.json()) as {
@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
 
   await connectDB();
 
-  const session = await Attendance.findOne({ _id: sessionId, createdBy: payload.userId });
+  const session = await Attendance.findOne({ _id: sessionId });
   if (!session) return NextResponse.json({ error: "Session not found." }, { status: 404 });
 
   const presentSet = new Set(

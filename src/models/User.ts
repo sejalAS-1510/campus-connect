@@ -18,6 +18,7 @@ export interface IUser {
   bio?: string;
   resumeUrl?: string;
   avatarUrl?: string;
+  isVerified?: boolean;
   createdAt: Date;
 }
 
@@ -42,6 +43,7 @@ const UserSchema = new Schema<IUser>(
     bio: { type: String, default: "" },
     resumeUrl: { type: String, default: "" },
     avatarUrl: { type: String, default: "" },
+    isVerified: { type: Boolean, default: true },
   },
   { timestamps: true }
 );
