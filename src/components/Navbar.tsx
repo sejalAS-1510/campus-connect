@@ -12,17 +12,21 @@ export default function Navbar({ user }: { user: CurrentUser | null }) {
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" });
     toast.success("Signed out.");
-    router.push("/login");
-    router.refresh();
+    window.location.href = "/login";
   }
 
   return (
-    <header className="border-b border-ink/10 dark:border-parchment/10">
+    <header className="border-b border-ink/10 dark:border-parchment/10 sticky top-0 bg-parchment/80 dark:bg-ink/80 backdrop-blur-md z-40">
       <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/dashboard" className="font-display text-lg tracking-tight">
+        <Link href="/dashboard" className="font-display text-lg tracking-tight flex items-center gap-2">
           Campus<span className="text-brass">Connect</span>
+          {user?.role && (
+            <span className="text-[10px] uppercase tracking-wider font-semibold rounded-full bg-brass/10 text-brass px-2 py-0.5">
+              {user.role}
+            </span>
+          )}
         </Link>
-        <nav className="flex items-center gap-5 text-sm">
+        <nav className="flex items-center gap-4 text-xs sm:text-sm">
           <Link href="/dashboard" className="hover:text-brass transition-colors">
             Dashboard
           </Link>
@@ -31,6 +35,12 @@ export default function Navbar({ user }: { user: CurrentUser | null }) {
           </Link>
           <Link href="/dashboard/assignments" className="hover:text-brass transition-colors">
             Assignments
+          </Link>
+          <Link href="/dashboard/events" className="hover:text-brass transition-colors">
+            Events
+          </Link>
+          <Link href="/dashboard/placements" className="hover:text-brass transition-colors">
+            Placements
           </Link>
           <ThemeToggle />
           {user && (

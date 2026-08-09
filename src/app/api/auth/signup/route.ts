@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     if (!name || !email || !password || !role) {
       return NextResponse.json({ error: "All fields are required." }, { status: 400 });
     }
-    if (!["student", "faculty"].includes(role)) {
+    if (!["student", "faculty", "coordinator", "admin"].includes(role)) {
       return NextResponse.json({ error: "Invalid role." }, { status: 400 });
     }
     if (password.length < 6) {

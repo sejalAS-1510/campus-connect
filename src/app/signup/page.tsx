@@ -50,14 +50,14 @@ export default function SignupPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-2">
-            {(["student", "faculty"] as const).map((r) => (
+            {(["student", "faculty", "coordinator", "admin"] as const).map((r) => (
               <button
                 type="button"
                 key={r}
                 onClick={() => setForm({ ...form, role: r })}
-                className={`rounded-lg border px-4 py-2 text-sm capitalize transition-colors ${
+                className={`rounded-lg border px-3 py-2 text-xs capitalize transition-colors ${
                   form.role === r
-                    ? "border-brass bg-brass/10 text-brass"
+                    ? "border-brass bg-brass/10 text-brass font-medium"
                     : "border-ink/15 dark:border-parchment/20 hover:bg-ink/5 dark:hover:bg-parchment/10"
                 }`}
               >

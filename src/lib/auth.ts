@@ -5,7 +5,7 @@ import { NextRequest } from "next/server";
 const JWT_SECRET = process.env.JWT_SECRET as string;
 const COOKIE_NAME = "campus_token";
 
-export type Role = "student" | "faculty";
+export type Role = "student" | "faculty" | "coordinator" | "admin";
 
 export interface TokenPayload {
   userId: string;
