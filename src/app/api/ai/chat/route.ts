@@ -5,6 +5,7 @@ import Event from "@/models/Event";
 import Placement from "@/models/Placement";
 import Assignment from "@/models/Assignment";
 import Attendance from "@/models/Attendance";
+import User from "@/models/User";
 
 export async function POST(req: NextRequest) {
   const payload = getTokenFromRequest(req);
@@ -15,31 +16,74 @@ export async function POST(req: NextRequest) {
 
   await connectDB();
 
-  const lower = message.toLowerCase();
+  const lower = message.toLowerCase().trim();
 
-  // 1. Greetings
-  if (lower === "hi" || lower === "hello" || lower === "hey" || lower === "hi there") {
+  // 1. Greetings & Identity
+  if (
+    lower === "hi" ||
+    lower === "hello" ||
+    lower === "hey" ||
+    lower === "hi there" ||
+    lower === "good morning" ||
+    lower === "good afternoon"
+  ) {
     return NextResponse.json({
-      reply: `Hello ${payload.name.split(" ")[0]}! I'm your Smart Campus AI Assistant. Ask me about live campus events, active placement drives, your pending assignments, or attendance rules!`,
+      reply: `Hello ${payload.name.split(" ")[0]}! 👋 I'm your Smart Campus AI Assistant. You can ask me about campus events, active placement drives, pending assignments, attendance criteria, hostel rules, exam schedules, or library facilities!`,
     });
   }
 
-  // 2. Events Queries (Dynamic DB Search)
-  if (lower.includes("event") || lower.includes("fest") || lower.includes("club") || lower.includes("workshop")) {
+  if (lower.includes("who are you") || lower.includes("what can you do") || lower.includes("your name")) {
+    return NextResponse.json({
+      reply: `🤖 **Smart Campus AI Assistant**: I am designed to assist students, faculty, coordinators, and admins with real-time campus data, academic guidance, event tickets, placement drives, attendance tracking, and general campus FAQs!`,
+    });
+  }
+
+  if (lower.includes("thank") || lower.includes("thanks") || lower.includes("awesome") || lower.includes("great")) {
+    return NextResponse.json({
+      reply: "You're very welcome! 😊 Let me know if you need any more campus help or information.",
+    });
+  }
+
+  // 2. User Profile & Account Info
+  if (
+    lower.includes("who am i") ||
+    lower.includes("my profile") ||
+    lower.includes("my role") ||
+    lower.includes("my details")
+  ) {
+    const userDoc = await User.findById(payload.userId);
+    if (userDoc) {
+      return NextResponse.json({
+        reply: `👤 **Your Campus Profile**:\n- **Name**: ${userDoc.name}\n- **Email**: ${userDoc.email}\n- **Role**: ${userDoc.role.toUpperCase()}\n- **Department**: ${userDoc.department || "Not specified"}\n- **Roll Number**: ${userDoc.rollNumber || "N/A"}`,
+      });
+    }
+  }
+
+  // 3. Events & Clubs Queries (Dynamic DB Search + General Rules)
+  if (
+    lower.includes("event") ||
+    lower.includes("fest") ||
+    lower.includes("club") ||
+    lower.includes("workshop") ||
+    lower.includes("hackathon") ||
+    lower.includes("ticket") ||
+    lower.includes("pass")
+  ) {
     const events = await Event.find({}).sort({ date: 1 });
 
     if (events.length === 0) {
       return NextResponse.json({
-        reply: "There are currently no campus events posted in the system. Faculty or Coordinators can publish new events under Dashboard -> Events!",
+        reply: "There are currently no campus events posted in the system. Faculty or Coordinators can publish new events under **Dashboard -> Events**!",
       });
     }
 
-    // Check if query mentions a month or number date (e.g. "19 july", "july", "today")
     const matching = events.filter((e) => {
       const d = new Date(e.date);
       const dateStr = d.toLocaleDateString("en-US", { month: "long", day: "numeric" }).toLowerCase();
       const titleLower = e.title.toLowerCase();
-      return lower.split(" ").some((word) => word.length > 2 && (dateStr.includes(word) || titleLower.includes(word)));
+      return lower
+        .split(" ")
+        .some((word: string) => word.length > 2 && (dateStr.includes(word) || titleLower.includes(word)));
     });
 
     const targetList = matching.length > 0 ? matching : events;
@@ -54,18 +98,27 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       reply: matching.length > 0
-        ? `Here are the matching event details:\n\n${listStr}\n\nYou can register and get your digital QR Pass under Dashboard -> Events!`
-        : `Here are the upcoming campus events:\n\n${listStr}\n\nHead over to Dashboard -> Events to reserve your seat and download your QR Pass!`,
+        ? `Here are the matching event details:\n\n${listStr}\n\nRegister & get your digital QR Pass under **Dashboard -> Events**!`
+        : `Here are the upcoming campus events:\n\n${listStr}\n\nHead over to **Dashboard -> Events** to reserve your seat and download your QR Pass!`,
     });
   }
 
-  // 3. Placement & Jobs Queries (Dynamic DB Search)
-  if (lower.includes("placement") || lower.includes("job") || lower.includes("company") || lower.includes("ctc") || lower.includes("drive") || lower.includes("hiring")) {
+  // 4. Placement & Job Drives (Dynamic DB Search + Criteria)
+  if (
+    lower.includes("placement") ||
+    lower.includes("job") ||
+    lower.includes("company") ||
+    lower.includes("ctc") ||
+    lower.includes("drive") ||
+    lower.includes("hiring") ||
+    lower.includes("package") ||
+    lower.includes("resume")
+  ) {
     const placements = await Placement.find({}).sort({ deadline: 1 });
 
     if (placements.length === 0) {
       return NextResponse.json({
-        reply: "There are no active placement drives posted right now. Placement Coordinators update job openings under Dashboard -> Placements.",
+        reply: "📌 **Placement Criteria**: Students with minimum 6.0 CGPA and no active backlogs are eligible for campus placement drives.\n\nCurrently, no new job drives are open. Check **Dashboard -> Placements** regularly!",
       });
     }
 
@@ -78,17 +131,23 @@ export async function POST(req: NextRequest) {
       .join("\n\n");
 
     return NextResponse.json({
-      reply: `Here are the current placement drives on campus:\n\n${listStr}\n\nYou can submit your resume link under Dashboard -> Placements!`,
+      reply: `📌 **Placement Drives**:\n\n${listStr}\n\nYou can attach your resume link and apply directly under **Dashboard -> Placements**!`,
     });
   }
 
-  // 4. Assignments Queries (Dynamic DB Search)
-  if (lower.includes("assignment") || lower.includes("homework") || lower.includes("due") || lower.includes("submission")) {
+  // 5. Assignments & Academic Homework
+  if (
+    lower.includes("assignment") ||
+    lower.includes("homework") ||
+    lower.includes("submission") ||
+    lower.includes("due") ||
+    lower.includes("project")
+  ) {
     const assignments = await Assignment.find({}).sort({ deadline: 1 });
 
     if (assignments.length === 0) {
       return NextResponse.json({
-        reply: "Great news! There are no pending assignments posted at the moment.",
+        reply: "Great news! There are currently no pending assignments posted in your portal.",
       });
     }
 
@@ -101,12 +160,19 @@ export async function POST(req: NextRequest) {
       .join("\n\n");
 
     return NextResponse.json({
-      reply: `Here are the posted academic assignments:\n\n${listStr}\n\nSubmit your solutions or repository links under Dashboard -> Assignments!`,
+      reply: `📚 **Active Assignments**:\n\n${listStr}\n\nSubmit your solutions or GitHub repository links under **Dashboard -> Assignments**!`,
     });
   }
 
-  // 5. Attendance & Criteria Queries
-  if (lower.includes("attendance") || lower.includes("percentage") || lower.includes("absent") || lower.includes("criteria")) {
+  // 6. Attendance & Percentage Rules
+  if (
+    lower.includes("attendance") ||
+    lower.includes("percentage") ||
+    lower.includes("absent") ||
+    lower.includes("present") ||
+    lower.includes("criteria") ||
+    lower.includes("75%")
+  ) {
     if (payload.role === "student") {
       const sessions = await Attendance.find({});
       let total = 0;
@@ -121,17 +187,123 @@ export async function POST(req: NextRequest) {
 
       const pct = total > 0 ? Math.round((present / total) * 100) : 0;
       return NextResponse.json({
-        reply: `📌 **Attendance Criteria**: Students must maintain at least 75% attendance in each subject for exam eligibility.\n\n📊 **Your Live Status**: You have attended ${present} of ${total} recorded classes (${pct}% attendance). Check detailed subject-wise breakdown under Dashboard -> Attendance!`,
+        reply: `📌 **Attendance Criteria**: Students must maintain at least 75% attendance in each subject for exam eligibility.\n\n📊 **Your Live Status**: You have attended ${present} of ${total} recorded classes (${pct}% attendance). Check detailed subject breakdown under **Dashboard -> Attendance**!`,
       });
     }
 
     return NextResponse.json({
-      reply: "📌 **Attendance Policy**: Minimum 75% attendance per subject is required for end-semester exams. Faculty can mark attendance per session under Dashboard -> Attendance.",
+      reply: "📌 **Attendance Policy**: Minimum 75% attendance per subject is required for end-semester exams. Faculty can mark attendance per session under **Dashboard -> Attendance**.",
     });
   }
 
-  // 6. Generic Smart Fallback
+  // 7. Exam & Grading System FAQ
+  if (
+    lower.includes("exam") ||
+    lower.includes("grade") ||
+    lower.includes("gpa") ||
+    lower.includes("cgpa") ||
+    lower.includes("marks") ||
+    lower.includes("result") ||
+    lower.includes("admit card")
+  ) {
+    return NextResponse.json({
+      reply: `📝 **Exams & Grading Policy**:\n- **10-Point Grading System**: A+ (10), A (9), B (8), C (7), D (6), F (Fail < 40%).\n- **Admit Cards**: Released 1 week before mid-semester / end-semester exams for students with >= 75% attendance.\n- **Re-evaluation**: Applications open within 7 days of result declaration via the Examination Office.`,
+    });
+  }
+
+  // 8. Hostel & Mess Rules FAQ
+  if (
+    lower.includes("hostel") ||
+    lower.includes("mess") ||
+    lower.includes("food") ||
+    lower.includes("room") ||
+    lower.includes("warden") ||
+    lower.includes("curfew")
+  ) {
+    return NextResponse.json({
+      reply: `🏢 **Hostel & Mess Rules**:\n- **Curfew Time**: Entry closes strictly at 10:00 PM for all resident hostels.\n- **Mess Timings**: Breakfast (7:30 - 9:30 AM), Lunch (12:30 - 2:30 PM), Dinner (7:30 - 9:30 PM).\n- **Gate Pass**: Apply via Student Affairs Desk 24 hours prior for overnight leaves.`,
+    });
+  }
+
+  // 9. Library FAQ
+  if (
+    lower.includes("library") ||
+    lower.includes("book") ||
+    lower.includes("borrow") ||
+    lower.includes("journal")
+  ) {
+    return NextResponse.json({
+      reply: `📚 **Central Library Information**:\n- **Timings**: 8:00 AM - 10:00 PM (Monday to Saturday), 24/7 during Exam Weeks.\n- **Borrowing Limit**: Students can borrow up to 4 books for 14 days.\n- **E-Resources**: Access IEEE, Springer, and ScienceDirect journals on campus Wi-Fi.`,
+    });
+  }
+
+  // 10. Wi-Fi & IT Support FAQ
+  if (
+    lower.includes("wifi") ||
+    lower.includes("internet") ||
+    lower.includes("password") ||
+    lower.includes("portal") ||
+    lower.includes("it help")
+  ) {
+    return NextResponse.json({
+      reply: `💻 **Campus Wi-Fi & IT Support**:\n- **Network Name**: CampusConnect_Secure\n- **Login**: Use your official student/faculty email and password.\n- **IT Helpdesk**: For password resets or portal access issues, visit Room 204, IT Building or email ithelp@campusconnect.edu.`,
+    });
+  }
+
+  // 11. Fees & Scholarships FAQ
+  if (
+    lower.includes("fee") ||
+    lower.includes("scholarship") ||
+    lower.includes("payment") ||
+    lower.includes("tuition")
+  ) {
+    return NextResponse.json({
+      reply: `💰 **Fees & Financial Aid**:\n- **Semester Fee Due Date**: 10th of the starting month of each semester.\n- **Merit Scholarships**: Available for top 5% scorers (CGPA >= 9.0) covering up to 50% tuition waiver.\n- **Payment Portal**: Fees can be paid online via the Accounts Section under Student Portal.`,
+    });
+  }
+
+  // 12. Medical & Emergency Services
+  if (
+    lower.includes("medical") ||
+    lower.includes("doctor") ||
+    lower.includes("health") ||
+    lower.includes("hospital") ||
+    lower.includes("emergency") ||
+    lower.includes("ambulance")
+  ) {
+    return NextResponse.json({
+      reply: `🏥 **Health Center & Emergency Helpline**:\n- **Location**: Health Center, Gate No. 2\n- **Doctor Hours**: 9:00 AM - 7:00 PM (Doctor on call 24/7)\n- **24/7 Campus Ambulance**: Call +91-9988776655 for immediate medical assistance.`,
+    });
+  }
+
+  // 13. Campus Transport & Bus
+  if (
+    lower.includes("bus") ||
+    lower.includes("transport") ||
+    lower.includes("shuttle") ||
+    lower.includes("parking")
+  ) {
+    return NextResponse.json({
+      reply: `🚌 **Campus Transport & Shuttle**:\n- **City Bus Routes**: Buses operate daily at 7:30 AM and 8:15 AM from major city hubs.\n- **Internal Shuttle**: Free electric shuttles run between Main Gate, Academic Blocks, and Hostels every 15 minutes.\n- **Parking**: Student two-wheeler/four-wheeler parking passes available at Gate 1 Security.`,
+    });
+  }
+
+  // 14. Contacts & Admin Office
+  if (
+    lower.includes("contact") ||
+    lower.includes("office") ||
+    lower.includes("dean") ||
+    lower.includes("phone") ||
+    lower.includes("email") ||
+    lower.includes("help")
+  ) {
+    return NextResponse.json({
+      reply: `📞 **Campus Administration Contacts**:\n- **Student Affairs Desk**: admin@campusconnect.edu | Room 102, Main Block\n- **Examination Cell**: exams@campusconnect.edu | Room 108\n- **Placement Cell**: placements@campusconnect.edu | Room 301, T&P Building\n- **Helpline**: +91-11-23456789 (Mon - Sat, 9 AM - 5 PM)`,
+    });
+  }
+
+  // 15. Intelligent Universal Fallback
   return NextResponse.json({
-    reply: `I can help you with real-time campus data! Try asking me:\n- *"Which campus events are scheduled for July?"*\n- *"What placement drives are open?"*\n- *"What are my pending assignments?"*\n- *"What is my current attendance percentage?"*`,
+    reply: `I'm here to help with all campus questions! You can ask me:\n- *"Which events are scheduled for July?"*\n- *"What companies are coming for placements?"*\n- *"What are my pending assignments?"*\n- *"What is my attendance percentage?"*\n- *"What are the hostel curfew hours?"*\n- *"How do I connect to campus Wi-Fi?"*\n- *"Who do I contact for exam re-evaluation?"*`,
   });
 }
