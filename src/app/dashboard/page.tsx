@@ -22,6 +22,11 @@ export default function DashboardPage() {
 
   const role = user?.role || "student";
 
+  const showAttendance = ["student", "faculty", "admin"].includes(role);
+  const showAssignments = ["student", "faculty", "admin"].includes(role);
+  const showEvents = ["student", "coordinator", "admin"].includes(role);
+  const showPlacements = ["student", "coordinator", "admin"].includes(role);
+
   return (
     <main className="min-h-screen pb-16">
       <Navbar user={user} />
@@ -48,23 +53,23 @@ export default function DashboardPage() {
           <div className="space-y-6">
             <div className="grid sm:grid-cols-3 gap-4">
               <div className="rounded-xl border border-ink/15 dark:border-parchment/15 p-5 bg-ink/5 dark:bg-parchment/5">
-                <p className="text-xs text-ink/50 dark:text-parchment/50">Today's Attendance Criteria</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-ink/50 dark:text-parchment/50">Today's Attendance Criteria</p>
                 <p className="text-2xl font-display font-semibold text-moss mt-1">75% Target</p>
-                <p className="text-[11px] text-ink/40 dark:text-parchment/40 mt-1">Status: Eligible for exams</p>
+                <p className="text-[11px] text-ink/40 dark:text-parchment/40 mt-1">Status: Eligible for end-sem exams</p>
               </div>
 
               <div className="rounded-xl border border-ink/15 dark:border-parchment/15 p-5 bg-ink/5 dark:bg-parchment/5">
-                <p className="text-xs text-ink/50 dark:text-parchment/50">Pending Homework</p>
-                <p className="text-2xl font-display font-semibold mt-1">Assignments</p>
-                <Link href="/dashboard/assignments" className="text-xs text-brass hover:underline mt-1 inline-block">
+                <p className="text-xs font-semibold uppercase tracking-wider text-ink/50 dark:text-parchment/50">Pending Assignments</p>
+                <p className="text-2xl font-display font-semibold mt-1">Homework</p>
+                <Link href="/dashboard/assignments" className="text-xs text-brass hover:underline mt-1 inline-block font-medium">
                   View open tasks →
                 </Link>
               </div>
 
               <div className="rounded-xl border border-ink/15 dark:border-parchment/15 p-5 bg-ink/5 dark:bg-parchment/5">
-                <p className="text-xs text-ink/50 dark:text-parchment/50">Digital Ticket Pass</p>
-                <p className="text-2xl font-display font-semibold mt-1">QR Pass</p>
-                <Link href="/dashboard/events" className="text-xs text-brass hover:underline mt-1 inline-block">
+                <p className="text-xs font-semibold uppercase tracking-wider text-ink/50 dark:text-parchment/50">Digital Ticket Pass</p>
+                <p className="text-2xl font-display font-semibold mt-1">Event Pass</p>
+                <Link href="/dashboard/events" className="text-xs text-brass hover:underline mt-1 inline-block font-medium">
                   Check registered events →
                 </Link>
               </div>
@@ -75,7 +80,7 @@ export default function DashboardPage() {
                 href="/dashboard/attendance"
                 className="rounded-xl border border-ink/15 dark:border-parchment/15 p-6 hover:border-brass transition-all bg-ink/5 dark:bg-parchment/5 space-y-2"
               >
-                <h3 className="font-display text-xl">📊 View Attendance History</h3>
+                <h3 className="font-display text-xl font-bold">View Attendance History</h3>
                 <p className="text-xs text-ink/60 dark:text-parchment/60">
                   Subject-by-subject attendance percentage, present count, and monthly breakdown.
                 </p>
@@ -85,7 +90,7 @@ export default function DashboardPage() {
                 href="/dashboard/placements"
                 className="rounded-xl border border-ink/15 dark:border-parchment/15 p-6 hover:border-brass transition-all bg-ink/5 dark:bg-parchment/5 space-y-2"
               >
-                <h3 className="font-display text-xl">💼 Active Placement Drives</h3>
+                <h3 className="font-display text-xl font-bold">Active Placement Drives</h3>
                 <p className="text-xs text-ink/60 dark:text-parchment/60">
                   Explore company job openings, CTC packages, eligibility, and submit your resume link.
                 </p>
@@ -99,25 +104,25 @@ export default function DashboardPage() {
           <div className="space-y-6">
             <div className="grid sm:grid-cols-3 gap-4">
               <div className="rounded-xl border border-ink/15 dark:border-parchment/15 p-5 bg-ink/5 dark:bg-parchment/5">
-                <p className="text-xs text-ink/50 dark:text-parchment/50">Academic Classes</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-ink/50 dark:text-parchment/50">Academic Classes</p>
                 <p className="text-2xl font-display font-semibold mt-1">Active Sessions</p>
-                <Link href="/dashboard/attendance" className="text-xs text-brass hover:underline mt-1 inline-block">
+                <Link href="/dashboard/attendance" className="text-xs text-brass hover:underline mt-1 inline-block font-medium">
                   Take attendance →
                 </Link>
               </div>
 
               <div className="rounded-xl border border-ink/15 dark:border-parchment/15 p-5 bg-ink/5 dark:bg-parchment/5">
-                <p className="text-xs text-ink/50 dark:text-parchment/50">Posted Homework</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-ink/50 dark:text-parchment/50">Posted Homework</p>
                 <p className="text-2xl font-display font-semibold mt-1">Assignments</p>
-                <Link href="/dashboard/assignments" className="text-xs text-brass hover:underline mt-1 inline-block">
+                <Link href="/dashboard/assignments" className="text-xs text-brass hover:underline mt-1 inline-block font-medium">
                   Review student submissions →
                 </Link>
               </div>
 
               <div className="rounded-xl border border-ink/15 dark:border-parchment/15 p-5 bg-ink/5 dark:bg-parchment/5">
-                <p className="text-xs text-ink/50 dark:text-parchment/50">Official Desk</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-ink/50 dark:text-parchment/50">Official Desk</p>
                 <p className="text-2xl font-display font-semibold mt-1">Announcements</p>
-                <Link href="/dashboard/notices" className="text-xs text-brass hover:underline mt-1 inline-block">
+                <Link href="/dashboard/notices" className="text-xs text-brass hover:underline mt-1 inline-block font-medium">
                   Publish notice →
                 </Link>
               </div>
@@ -130,25 +135,25 @@ export default function DashboardPage() {
           <div className="space-y-6">
             <div className="grid sm:grid-cols-3 gap-4">
               <div className="rounded-xl border border-ink/15 dark:border-parchment/15 p-5 bg-ink/5 dark:bg-parchment/5">
-                <p className="text-xs text-ink/50 dark:text-parchment/50">Campus Events</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-ink/50 dark:text-parchment/50">Campus Events</p>
                 <p className="text-2xl font-display font-semibold mt-1">Events & Fests</p>
-                <Link href="/dashboard/events" className="text-xs text-brass hover:underline mt-1 inline-block">
+                <Link href="/dashboard/events" className="text-xs text-brass hover:underline mt-1 inline-block font-medium">
                   Manage seats & venues →
                 </Link>
               </div>
 
               <div className="rounded-xl border border-ink/15 dark:border-parchment/15 p-5 bg-ink/5 dark:bg-parchment/5">
-                <p className="text-xs text-ink/50 dark:text-parchment/50">Placement Cell</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-ink/50 dark:text-parchment/50">Placement Cell</p>
                 <p className="text-2xl font-display font-semibold mt-1">Job Drives</p>
-                <Link href="/dashboard/placements" className="text-xs text-brass hover:underline mt-1 inline-block">
+                <Link href="/dashboard/placements" className="text-xs text-brass hover:underline mt-1 inline-block font-medium">
                   View job applicants →
                 </Link>
               </div>
 
               <div className="rounded-xl border border-ink/15 dark:border-parchment/15 p-5 bg-ink/5 dark:bg-parchment/5">
-                <p className="text-xs text-ink/50 dark:text-parchment/50">Notice Board</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-ink/50 dark:text-parchment/50">Notice Board</p>
                 <p className="text-2xl font-display font-semibold mt-1">Announcements</p>
-                <Link href="/dashboard/notices" className="text-xs text-brass hover:underline mt-1 inline-block">
+                <Link href="/dashboard/notices" className="text-xs text-brass hover:underline mt-1 inline-block font-medium">
                   Publish announcement →
                 </Link>
               </div>
@@ -160,7 +165,7 @@ export default function DashboardPage() {
         {role === "admin" && (
           <div className="space-y-6">
             <div className="rounded-xl border border-ink/15 dark:border-parchment/15 p-6 bg-ink/5 dark:bg-parchment/5 space-y-3">
-              <h2 className="font-display text-xl font-semibold">⚡ Admin Master Control</h2>
+              <h2 className="font-display text-xl font-semibold">Admin Master Control</h2>
               <p className="text-xs text-ink/60 dark:text-parchment/60">
                 Manage user directory, assign roles (Student, Faculty, Coordinator, Admin), delete users, and view platform reports.
               </p>
@@ -178,57 +183,61 @@ export default function DashboardPage() {
 
         {/* Main Navigation Modules Grid */}
         <div className="grid sm:grid-cols-2 gap-5 pt-4">
-          <Link
-            href="/dashboard/attendance"
-            className="rounded-xl border border-ink/15 dark:border-parchment/15 p-6 hover:border-brass transition-all bg-ink/5 dark:bg-parchment/5"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="font-display text-xl">Attendance Module</h2>
-              <span>📊</span>
-            </div>
-            <p className="text-xs text-ink/60 dark:text-parchment/60">
-              Track attendance, generate session records, and check subject breakdown.
-            </p>
-          </Link>
+          {showAttendance && (
+            <Link
+              href="/dashboard/attendance"
+              className="rounded-xl border border-ink/15 dark:border-parchment/15 p-6 hover:border-brass transition-all bg-ink/5 dark:bg-parchment/5"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="font-display text-xl font-bold">Attendance Module</h2>
+              </div>
+              <p className="text-xs text-ink/60 dark:text-parchment/60">
+                Track attendance, generate session records, and check subject breakdown.
+              </p>
+            </Link>
+          )}
 
-          <Link
-            href="/dashboard/assignments"
-            className="rounded-xl border border-ink/15 dark:border-parchment/15 p-6 hover:border-brass transition-all bg-ink/5 dark:bg-parchment/5"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="font-display text-xl">Assignment Portal</h2>
-              <span>📚</span>
-            </div>
-            <p className="text-xs text-ink/60 dark:text-parchment/60">
-              Post homework, set deadlines, submit solutions, and inspect student links.
-            </p>
-          </Link>
+          {showAssignments && (
+            <Link
+              href="/dashboard/assignments"
+              className="rounded-xl border border-ink/15 dark:border-parchment/15 p-6 hover:border-brass transition-all bg-ink/5 dark:bg-parchment/5"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="font-display text-xl font-bold">Assignment Portal</h2>
+              </div>
+              <p className="text-xs text-ink/60 dark:text-parchment/60">
+                Post homework, set deadlines, submit solutions, and inspect student links.
+              </p>
+            </Link>
+          )}
 
-          <Link
-            href="/dashboard/events"
-            className="rounded-xl border border-ink/15 dark:border-parchment/15 p-6 hover:border-brass transition-all bg-ink/5 dark:bg-parchment/5"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="font-display text-xl">Events & Clubs</h2>
-              <span>🎉</span>
-            </div>
-            <p className="text-xs text-ink/60 dark:text-parchment/60">
-              Publish campus events, manage seat capacity, and issue digital QR passes.
-            </p>
-          </Link>
+          {showEvents && (
+            <Link
+              href="/dashboard/events"
+              className="rounded-xl border border-ink/15 dark:border-parchment/15 p-6 hover:border-brass transition-all bg-ink/5 dark:bg-parchment/5"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="font-display text-xl font-bold">Events & Clubs</h2>
+              </div>
+              <p className="text-xs text-ink/60 dark:text-parchment/60">
+                Publish campus events, manage seat capacity, and issue digital QR passes.
+              </p>
+            </Link>
+          )}
 
-          <Link
-            href="/dashboard/placements"
-            className="rounded-xl border border-ink/15 dark:border-parchment/15 p-6 hover:border-brass transition-all bg-ink/5 dark:bg-parchment/5"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="font-display text-xl">Placement Notices</h2>
-              <span>💼</span>
-            </div>
-            <p className="text-xs text-ink/60 dark:text-parchment/60">
-              Post job drives, view package CTCs, submit resumes, and track applicants.
-            </p>
-          </Link>
+          {showPlacements && (
+            <Link
+              href="/dashboard/placements"
+              className="rounded-xl border border-ink/15 dark:border-parchment/15 p-6 hover:border-brass transition-all bg-ink/5 dark:bg-parchment/5"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="font-display text-xl font-bold">Placement Notices</h2>
+              </div>
+              <p className="text-xs text-ink/60 dark:text-parchment/60">
+                Post job drives, view package CTCs, submit resumes, and track applicants.
+              </p>
+            </Link>
+          )}
         </div>
       </div>
 

@@ -181,7 +181,7 @@ export default function EventsPage() {
                     </span>
                   </div>
                   <p className="text-xs text-ink/50 dark:text-parchment/50 mb-3">
-                    📍 {ev.venue} · 📅 {new Date(ev.date).toLocaleDateString()}
+                    Venue: {ev.venue} · Date: {new Date(ev.date).toLocaleDateString()}
                   </p>
                   <p className="text-sm text-ink/70 dark:text-parchment/70 leading-relaxed mb-2">{ev.description}</p>
                 </div>
@@ -189,7 +189,7 @@ export default function EventsPage() {
                 <div className="pt-2 border-t border-ink/10 dark:border-parchment/10 flex items-center justify-between">
                   {ev.registeredTicket ? (
                     <div className="text-xs text-moss font-semibold bg-moss/10 px-3 py-1.5 rounded-md">
-                      🎟️ Ticket: {ev.registeredTicket}
+                      Digital Pass Code: {ev.registeredTicket}
                     </div>
                   ) : user?.role === "student" ? (
                     <button

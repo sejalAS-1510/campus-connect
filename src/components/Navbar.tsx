@@ -12,6 +12,14 @@ export default function Navbar({ user }: { user: CurrentUser | null }) {
     window.location.href = "/login";
   }
 
+  const role = user?.role || "student";
+
+  const showAttendance = ["student", "faculty", "admin"].includes(role);
+  const showAssignments = ["student", "faculty", "admin"].includes(role);
+  const showEvents = ["student", "coordinator", "admin"].includes(role);
+  const showPlacements = ["student", "coordinator", "admin"].includes(role);
+  const showAdminPanel = role === "admin";
+
   return (
     <header className="border-b border-ink/10 dark:border-parchment/10 sticky top-0 bg-parchment/80 dark:bg-ink/80 backdrop-blur-md z-40">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -23,30 +31,44 @@ export default function Navbar({ user }: { user: CurrentUser | null }) {
             </span>
           )}
         </Link>
-        <nav className="flex items-center gap-3 text-xs sm:text-sm">
+        <nav className="flex items-center gap-3.5 text-xs sm:text-sm font-medium">
           <Link href="/dashboard" className="hover:text-brass transition-colors">
             Dashboard
           </Link>
           <Link href="/dashboard/notices" className="hover:text-brass transition-colors">
             Notices
           </Link>
-          <Link href="/dashboard/attendance" className="hover:text-brass transition-colors">
-            Attendance
-          </Link>
-          <Link href="/dashboard/assignments" className="hover:text-brass transition-colors">
-            Assignments
-          </Link>
-          <Link href="/dashboard/events" className="hover:text-brass transition-colors">
-            Events
-          </Link>
-          <Link href="/dashboard/placements" className="hover:text-brass transition-colors">
-            Placements
-          </Link>
-          {user?.role === "admin" && (
-            <Link href="/dashboard/admin" className="hover:text-brass font-medium text-brass transition-colors">
+
+          {showAttendance && (
+            <Link href="/dashboard/attendance" className="hover:text-brass transition-colors">
+              Attendance
+            </Link>
+          )}
+
+          {showAssignments && (
+            <Link href="/dashboard/assignments" className="hover:text-brass transition-colors">
+              Assignments
+            </Link>
+          )}
+
+          {showEvents && (
+            <Link href="/dashboard/events" className="hover:text-brass transition-colors">
+              Events
+            </Link>
+          )}
+
+          {showPlacements && (
+            <Link href="/dashboard/placements" className="hover:text-brass transition-colors">
+              Placements
+            </Link>
+          )}
+
+          {showAdminPanel && (
+            <Link href="/dashboard/admin" className="hover:text-brass font-bold text-brass transition-colors">
               Admin Panel
             </Link>
           )}
+
           <Link href="/dashboard/profile" className="hover:text-brass transition-colors">
             Profile
           </Link>
@@ -54,10 +76,11 @@ export default function Navbar({ user }: { user: CurrentUser | null }) {
             Settings
           </Link>
           <ThemeToggle />
+
           {user && (
             <button
               onClick={handleLogout}
-              className="rounded-full border border-ink/15 dark:border-parchment/20 px-3 py-1.5 hover:bg-ink/5 dark:hover:bg-parchment/10 transition-colors"
+              className="rounded-full border border-ink/15 dark:border-parchment/20 px-3.5 py-1.5 hover:bg-ink/5 dark:hover:bg-parchment/10 transition-colors"
             >
               Sign out
             </button>

@@ -73,7 +73,7 @@ export default function ForgotPasswordPage() {
 
         {demoOtp && step === "reset" && (
           <div className="mb-4 rounded-lg bg-brass/10 border border-brass/20 p-3 text-xs text-brass">
-            🔑 <strong>Demo OTP Code:</strong> {demoOtp}
+            <strong>Demo OTP Code:</strong> {demoOtp}
           </div>
         )}
 

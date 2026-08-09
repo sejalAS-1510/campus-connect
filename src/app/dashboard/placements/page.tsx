@@ -209,7 +209,7 @@ export default function PlacementsPage() {
                       {p.company} <span className="text-sm font-normal text-brass">· {p.role}</span>
                     </h3>
                     <p className="text-xs text-ink/50 dark:text-parchment/50 mt-1">
-                      💼 Package: <strong className="text-ink dark:text-parchment">{p.ctc}</strong> · 🎓 Eligibility: {p.eligibility}
+                      Package CTC: <strong className="text-ink dark:text-parchment">{p.ctc}</strong> · Eligibility: {p.eligibility}
                     </p>
                   </div>
                   <span className="text-xs rounded-full bg-brass/10 text-brass px-3 py-1 font-medium">
@@ -225,11 +225,11 @@ export default function PlacementsPage() {
                       onClick={() => fetchApplicants(p._id)}
                       className="text-xs rounded-full bg-brass/15 text-brass hover:bg-brass/25 px-3.5 py-1.5 font-medium transition-colors"
                     >
-                      {openApplicantsId === p._id ? "Close Applicants" : `👥 ${p.applicantCount} Applicants`}
+                      {openApplicantsId === p._id ? "Close Applicants" : `${p.applicantCount} Applicants`}
                     </button>
                   ) : (
-                    <span className="text-xs text-ink/50 dark:text-parchment/50">
-                      👥 {p.applicantCount} Student{p.applicantCount !== 1 ? "s" : ""} Applied
+                    <span className="text-xs text-ink/50 dark:text-parchment/50 font-medium">
+                      {p.applicantCount} Student{p.applicantCount !== 1 ? "s" : ""} Applied
                     </span>
                   )}
 
@@ -276,7 +276,7 @@ export default function PlacementsPage() {
                                 {app.student?.rollNumber && ` (${app.student.rollNumber})`}
                               </p>
                               <p className="text-[11px] text-ink/50 dark:text-parchment/50">
-                                ✉️ {app.student?.email} · Applied {new Date(app.appliedAt).toLocaleDateString()}
+                                Email: {app.student?.email} · Applied {new Date(app.appliedAt).toLocaleDateString()}
                               </p>
                             </div>
                             {app.resumeUrl ? (
