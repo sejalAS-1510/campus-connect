@@ -11,7 +11,7 @@ CampusConnect is a centralized, production-ready Smart Campus Platform built to 
 ## 🔗 Submission Links
 
 - **Live Production URL**: `https://campus-connect.vercel.app` *(Replace with your live Vercel URL)*
-- **Public GitHub Repository**: `https://github.com/YOUR_USERNAME/campus-connect`
+- **Public GitHub Repository**: `https://github.com/sejalAS-1510/campus-connect`
 
 ---
 
