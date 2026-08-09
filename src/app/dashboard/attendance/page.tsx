@@ -86,6 +86,20 @@ export default function AttendancePage() {
     load();
   }
 
+  function exportCSV(session: Session) {
+    const headers = "Student Name,Roll Number,Status\n";
+    const rows = session.records
+      .map((r) => `"${r.student?.name || "Student"}","${r.student?.rollNumber || "N/A"}",${r.present ? "Present" : "Absent"}`)
+      .join("\n");
+    const blob = new Blob([headers + rows], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Attendance_${session.subject}_${new Date(session.date).toISOString().slice(0, 10)}.csv`;
+    a.click();
+    toast.success("Attendance CSV exported!");
+  }
+
   return (
     <main>
       <Navbar user={user} />
@@ -141,12 +155,20 @@ export default function AttendancePage() {
                             {new Date(s.date).toLocaleDateString()} · {presentCount}/{s.records.length} present
                           </p>
                         </div>
-                        <button
-                          onClick={() => openMarking(s)}
-                          className="text-sm text-brass hover:underline"
-                        >
-                          Mark
-                        </button>
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => exportCSV(s)}
+                            className="text-xs rounded-full border border-ink/20 dark:border-parchment/20 px-3 py-1 hover:bg-ink/5 dark:hover:bg-parchment/10 transition-colors"
+                          >
+                            📥 Export CSV
+                          </button>
+                          <button
+                            onClick={() => openMarking(s)}
+                            className="text-sm text-brass hover:underline font-medium"
+                          >
+                            Mark
+                          </button>
+                        </div>
                       </div>
 
                       {openSession === s._id && (
