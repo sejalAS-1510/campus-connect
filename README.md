@@ -10,8 +10,8 @@ CampusConnect is a centralized, production-ready Smart Campus Platform built to 
 
 ## 🔗 Submission Links
 
-- **Live Production URL**: `https://campusconnect-7az7.onrender.com`
-- **Public GitHub Repository**: `https://github.com/sejalAS-1510/campus-connect`
+- **Live Production URL**: [https://campusconnect-7az7.onrender.com](https://campusconnect-7az7.onrender.com)
+- **Public GitHub Repository**: [https://github.com/sejalAS-1510/campus-connect](https://github.com/sejalAS-1510/campus-connect)
 
 ---
 
@@ -79,7 +79,7 @@ You can use the following test accounts to explore all 4 roles on the live platf
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/campus-connect.git
+   git clone https://github.com/sejalAS-1510/campus-connect.git
    cd campus-connect
    ```
 
