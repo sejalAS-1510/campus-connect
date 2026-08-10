@@ -48,7 +48,7 @@ export default function PlacementsPage() {
   const [creating, setCreating] = useState(false);
   const [resumeUrl, setResumeUrl] = useState("");
 
-  // Drawer for Viewing Applicants (Admin/Coordinator/Faculty)
+  // Drawer for Viewing Applicants (Admin/Coordinator)
   const [openApplicantsId, setOpenApplicantsId] = useState<string | null>(null);
   const [applicantsList, setApplicantsList] = useState<ApplicantItem[]>([]);
   const [loadingApplicants, setLoadingApplicants] = useState(false);
@@ -255,7 +255,7 @@ export default function PlacementsPage() {
                   ) : null}
                 </div>
 
-                {/* Applicants Drawer for Coordinators / Admin / Faculty */}
+                {/* Applicants Drawer for Coordinators / Admin */}
                 {openApplicantsId === p._id && (
                   <div className="mt-4 border-t border-ink/10 dark:border-parchment/10 pt-4">
                     <h4 className="text-sm font-medium mb-3">Applied Students</h4>
