@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import User from "@/models/User";
 import { verifyPassword, signToken, AUTH_COOKIE_NAME } from "@/lib/auth";
+import { ensureTestAccounts } from "@/lib/seedTestAccounts";
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,6 +12,8 @@ export async function POST(req: NextRequest) {
     }
 
     await connectDB();
+    // Ensure test accounts exist in database
+    await ensureTestAccounts();
 
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {

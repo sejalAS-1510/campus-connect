@@ -59,11 +59,11 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-6 py-16">
+    <main className="min-h-screen flex items-center justify-center px-6 py-12">
       <div className="w-full max-w-sm space-y-6">
         <div>
-          <h1 className="font-display text-3xl mb-1">Sign in</h1>
-          <p className="text-sm text-ink/60 dark:text-parchment/60">
+          <h1 className="font-display text-3xl font-bold mb-1">Sign in</h1>
+          <p className="text-xs text-ink/60 dark:text-parchment/60">
             Welcome back to CampusConnect.
           </p>
         </div>
@@ -72,7 +72,7 @@ export default function LoginPage() {
         <button
           onClick={handleGoogleLogin}
           disabled={googleLoading}
-          className="w-full flex items-center justify-center gap-3 rounded-full border border-ink/20 dark:border-parchment/20 px-4 py-2.5 text-sm font-medium hover:bg-ink/5 dark:hover:bg-parchment/10 transition-colors disabled:opacity-50"
+          className="w-full flex items-center justify-center gap-3 rounded-full border border-ink/20 dark:border-parchment/20 px-4 py-2.5 text-xs font-medium hover:bg-ink/5 dark:hover:bg-parchment/10 transition-colors disabled:opacity-50"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24">
             <path
@@ -95,21 +95,21 @@ export default function LoginPage() {
           {googleLoading ? "Signing in with Google..." : "Continue with Google"}
         </button>
 
-        <div className="relative flex items-center justify-center my-4">
-          <span className="absolute bg-parchment dark:bg-ink px-3 text-xs text-ink/40 dark:text-parchment/40">
+        <div className="relative flex items-center justify-center my-3">
+          <span className="absolute bg-parchment dark:bg-slate-950 px-3 text-[11px] text-ink/40 dark:text-parchment/40">
             or continue with email
           </span>
           <div className="w-full border-t border-ink/10 dark:border-parchment/10"></div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3.5">
           <input
             required
             type="email"
             placeholder="Email"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="w-full rounded-lg border border-ink/15 dark:border-parchment/20 bg-transparent px-4 py-2.5 text-sm outline-none focus:border-brass"
+            className="w-full rounded-lg border border-ink/15 dark:border-parchment/20 bg-transparent px-3.5 py-2.5 text-xs outline-none focus:border-brass"
           />
           <div>
             <input
@@ -118,10 +118,10 @@ export default function LoginPage() {
               placeholder="Password"
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
-              className="w-full rounded-lg border border-ink/15 dark:border-parchment/20 bg-transparent px-4 py-2.5 text-sm outline-none focus:border-brass"
+              className="w-full rounded-lg border border-ink/15 dark:border-parchment/20 bg-transparent px-3.5 py-2.5 text-xs outline-none focus:border-brass"
             />
             <div className="text-right mt-1.5">
-              <Link href="/forgot-password" className="text-xs text-brass hover:underline">
+              <Link href="/forgot-password" className="text-[11px] text-brass hover:underline">
                 Forgot password?
               </Link>
             </div>
@@ -129,13 +129,13 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-full bg-ink text-parchment dark:bg-parchment dark:text-ink px-4 py-3 font-medium hover:opacity-90 transition-opacity disabled:opacity-50 text-sm"
+            className="w-full rounded-full bg-ink text-parchment dark:bg-parchment dark:text-ink px-4 py-2.5 font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 text-xs"
           >
             {loading ? "Signing in…" : "Sign in"}
           </button>
         </form>
 
-        <p className="text-sm text-ink/60 dark:text-parchment/60 text-center">
+        <p className="text-xs text-ink/60 dark:text-parchment/60 text-center">
           New here?{" "}
           <Link href="/signup" className="text-brass hover:underline font-medium">
             Create an account
